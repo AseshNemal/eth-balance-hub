@@ -8,6 +8,15 @@ module.exports = function override(config) {
     config.resolve.fallback = {};
   }
 
+  // Disable fullySpecified to fix react-router ESM import errors
+  config.resolve.fullySpecified = false;
+
+  // Add alias for process/browser.js to fix fully specified import error
+  if (!config.resolve.alias) {
+    config.resolve.alias = {};
+  }
+  config.resolve.alias['process/browser'] = require.resolve('process/browser.js');
+
   Object.assign(config.resolve.fallback, {
     "stream": require.resolve("stream-browserify"),
     "assert": require.resolve("assert/"),

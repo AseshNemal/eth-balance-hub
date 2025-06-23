@@ -4,6 +4,7 @@ import WalletConnectProvider from './WalletConnectProvider';
 import TokenList from './TokenList';
 import { ethers } from 'ethers';
 
+
 function WalletApp() {
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
@@ -20,6 +21,7 @@ function WalletApp() {
   };
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100 p-8">
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-indigo-700">ETH Balance Hub</h1>

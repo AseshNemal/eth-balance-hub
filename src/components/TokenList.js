@@ -204,7 +204,7 @@ const TokenList = ({ provider, account }) => {
         ))}
       </ul>
       {selectedToken && priceHistory.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-8 max-w-md h-48">
           <TokenChart tokenSymbol={selectedToken.symbol} priceHistory={priceHistory} />
         </div>
       )}

@@ -32,20 +32,36 @@ const categories = [
 
 // Category to coin ID mapping for filtering backup API results
 const CATEGORY_COIN_IDS = {
+  decentralized_finance_defi: [
+    'uniswap', 'aave', 'compound-governance-token', 'maker', 'curve-dao-token', 'yearn-finance', 'sushi', 'balancer',
+    '1inch', 'pancakeswap-token', 'venus', 'alpha-finance', 'badger-dao', 'cream', 'dydx', 'loopring', 'ren', 'synthetix-network-token',
+    'thorchain', 'bancor', 'celsius-degree-token', 'dharma', 'dodo', 'mcdex', 'mstable', 'nexus-mutual', 'ocean-protocol',
+    'perpetual-protocol', 'rari-governance-token', 'safepal', 'sora', 'swipe', 'terra-luna', 'venus-bep20', 'yearn-finance-ecosystem-token',
+    'convex-finance', 'frax', 'liquity', 'alchemix', 'barnbridge', 'badger-dao', 'pickle-finance', 'tokemak', 'ribbon-finance',
+    'barnbridge', 'barnbridge-bond-token', 'barnbridge-governance-token', 'morpho', 'pendle', 'rari-governance-token', 'saffron-finance',
+    'sushi', 'trader-joe', 'velodrome-finance', 'wonderland', 'abracadabra-money', 'spell-token', 'olympus', 'frax-share',
+    'frax-price-index', 'frax-ether', 'frax-usd', 'frax-lend', 'frax-finance', 'frax-token', 'frax-price-index', 'frax-usd',
+    // ...add more DeFi coin IDs as needed
+  ],
   nft: [
     'decentraland', 'the-sandbox', 'axie-infinity', 'enjincoin', 'flow', 'wax', 'gala', 'immutable-x', 'superrare', 'audius',
     'theta-token', 'chiliz', 'decentral-games', 'alien-worlds', 'splinterlands', 'my-neighbor-alice', 'rari-governance-token',
     'apy-vision', 'ultra', 'origin-protocol', 'ape-coin', 'looksrare', 'blur', 'nftx', 'nft20', 'mobox', 'vulcan-forged',
     'wilder-world', 'star-atlas', 'starlink', 'illuvium', 'gods-unchained', 'ethernity-chain', 'treasure', 'binamon',
     'curate', 'polychain-monsters', 'dogami', 'cryptoblades', 'cryptomines-eternal', 'revv', 'sandclock', 'mintable',
-    'mintme-com-coin', 'mintlayer', 'minty-art', 'minty', 'minty-token', 'mintyway', 'mintyverse', 'mintyworld', 'mintyzone'
+    'mintme-com-coin', 'mintlayer', 'minty-art', 'minty', 'minty-token', 'mintyway', 'mintyverse', 'mintyworld', 'mintyzone',
+    'art-blocks', 'bored-ape-yacht-club', 'cool-cats', 'cryptopunks', 'meebits', 'mutant-ape-yacht-club', 'azuki', 'clonex',
+    'doodles', 'gutter-cat-gang', 'world-of-women', 'parallel', 'sevens', 'veefriends', 'otherdeed', 'moonbirds', 'okay-bears',
+    'sorare', 'zora', 'superrare', 'foundation', 'makersplace', 'knownorigin', 'async-art', 'niftygateway', 'rarible',
     // ...add more as needed
   ],
   stablecoins: [
     'tether', 'usd-coin', 'binance-usd', 'dai', 'true-usd', 'pax-dollar', 'gemini-dollar', 'usdd', 'frax', 'neutrino',
+    'husd', 'usdk', 'usdn', 'musd', 'alusd', 'gusd', 'usdp', 'usdx', 'usdt', 'usdc', 'busd', 'tusd', 'cusd', 'eurs',
+    'usds', 'usdt-tron', 'usdt-erc20', 'usdt-bep20', 'usdt-omni', 'usdt-trc20', 'usdt-polygon', 'usdt-avalanche',
+    'usdt-fantom', 'usdt-arbitrum', 'usdt-optimism', 'usdt-gnosis', 'usdt-aurora', 'usdt-celo', 'usdt-harmony',
     // ...add more stablecoin IDs as needed
   ],
-  // Add more categories as needed
 };
 
 // Example tokens for fallback if no data is available

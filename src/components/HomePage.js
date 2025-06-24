@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './HomePage.css';
+import { fetchWithCache } from '../utils/fetchWithCache';
+import { fetchWithMultiBackup } from '../utils/fetchWithBackup';
 
 const bgImages = [
   'https://content.kaspersky-labs.com/fm/press-releases/e0/e0c122e63ca4199bb2f758617abad50b/source/cryptocurrencyimage11130490519670x377px300dpi.jpg',
@@ -16,24 +18,56 @@ const HomePage = () => {
   const [fade, setFade] = useState(true);
   const [retrying, setRetrying] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = async (forceRefresh = false) => {
     setRetrying(true);
     setLoading(true);
     try {
-      const [coinsRes, statsRes] = await Promise.all([
-        axios.get('https://api.coingecko.com/api/v3/coins/markets', {
-          params: {
-            vs_currency: 'usd',
-            order: 'market_cap_desc',
-            per_page: 10,
-            page: 1,
-            sparkline: false,
-          },
-        }),
-        axios.get('https://api.coingecko.com/api/v3/global'),
+      const coinsSources = [
+        {
+          url: 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false',
+          cacheKey: 'cg_top10',
+          type: 'coins',
+          backupType: 'coingecko',
+        },
+        {
+          url: 'https://api.coincap.io/v2/assets',
+          cacheKey: 'cc_top10',
+          type: 'coins',
+          backupType: 'coincap',
+        },
+        {
+          url: 'https://api.coinpaprika.com/v1/tickers',
+          cacheKey: 'cp_top10',
+          type: 'coins',
+          backupType: 'coinpaprika',
+        },
+      ];
+      const globalSources = [
+        {
+          url: 'https://api.coingecko.com/api/v3/global',
+          cacheKey: 'cg_global',
+          type: 'global',
+          backupType: 'coingecko',
+        },
+        {
+          url: 'https://api.coincap.io/v2/global',
+          cacheKey: 'cc_global',
+          type: 'global',
+          backupType: 'coincap',
+        },
+        {
+          url: 'https://api.coinpaprika.com/v1/global',
+          cacheKey: 'cp_global',
+          type: 'global',
+          backupType: 'coinpaprika',
+        },
+      ];
+      const [coinsData, statsData] = await Promise.all([
+        fetchWithMultiBackup({ sources: coinsSources, forceRefresh }),
+        fetchWithMultiBackup({ sources: globalSources, forceRefresh }),
       ]);
-      setCoins(coinsRes.data);
-      setGlobalStats(statsRes.data.data);
+      setCoins(coinsData);
+      setGlobalStats(statsData.data);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -109,7 +143,7 @@ const HomePage = () => {
                 <button
                   className="animated-btn"
                   style={{ padding: '0.3rem 1rem', fontSize: 14 }}
-                  onClick={fetchData}
+                  onClick={() => fetchData(true)}
                   disabled={loading || retrying}
                 >
                   {retrying ? 'Retrying...' : 'Retry'}

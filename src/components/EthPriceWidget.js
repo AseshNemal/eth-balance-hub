@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { fetchWithMultiBackup } from '../utils/fetchWithBackup';
 
 const EthPriceWidget = () => {
   const [price, setPrice] = useState(null);
@@ -9,11 +10,29 @@ const EthPriceWidget = () => {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true');
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
-        setPrice(data.ethereum.usd);
-        setChange(data.ethereum.usd_24h_change);
+        const priceSources = [
+          {
+            url: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true',
+            cacheKey: 'cg_eth_simple',
+            type: 'simple_price',
+            backupType: 'coingecko',
+          },
+          {
+            url: 'https://api.coincap.io/v2/assets/ethereum',
+            cacheKey: 'cc_eth_simple',
+            type: 'simple_price',
+            backupType: 'coincap',
+          },
+          {
+            url: 'https://api.coinpaprika.com/v1/tickers/eth-ethereum',
+            cacheKey: 'cp_eth_simple',
+            type: 'simple_price',
+            backupType: 'coinpaprika',
+          },
+        ];
+        const data = await fetchWithMultiBackup({ sources: priceSources });
+        setPrice(data.ethereum?.usd || data['eth-ethereum']?.usd || Object.values(data)[0]?.usd);
+        setChange(data.ethereum?.usd_24h_change || 0);
         setError(null);
       } catch (err) {
         setError('Failed to fetch ETH price');
@@ -21,9 +40,27 @@ const EthPriceWidget = () => {
     };
     const fetchHistory = async () => {
       try {
-        const res = await fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=7');
-        if (!res.ok) throw new Error('Network response was not ok');
-        const data = await res.json();
+        const chartSources = [
+          {
+            url: 'https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=7',
+            cacheKey: 'cg_eth_7d',
+            type: 'market_chart',
+            backupType: 'coingecko',
+          },
+          {
+            url: `https://api.coincap.io/v2/assets/ethereum/history?interval=d1&start=${Date.now() - 7 * 24 * 60 * 60 * 1000}&end=${Date.now()}`,
+            cacheKey: 'cc_eth_7d',
+            type: 'market_chart',
+            backupType: 'coincap',
+          },
+          {
+            url: `https://api.coinpaprika.com/v1/tickers/eth-ethereum/historical?start=${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()}&interval=1d`,
+            cacheKey: 'cp_eth_7d',
+            type: 'market_chart',
+            backupType: 'coinpaprika',
+          },
+        ];
+        const data = await fetchWithMultiBackup({ sources: chartSources });
         setHistory(data.prices.map(([t, p]) => p));
         setError(null);
       } catch (err) {

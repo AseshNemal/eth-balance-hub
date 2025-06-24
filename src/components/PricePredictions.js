@@ -11,6 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import './PricePredictions.css';
+import { fetchWithMultiBackup } from '../utils/fetchWithBackup';
 
 ChartJS.register(
   CategoryScale,
@@ -31,6 +32,44 @@ const COINS = [
   { id: 'solana', name: 'Solana (SOL)' },
   { id: 'dogecoin', name: 'Dogecoin (DOGE)' },
 ];
+
+const COIN_ID_MAP = {
+  ethereum: {
+    coingecko: 'ethereum',
+    coincap: 'ethereum',
+    coinpaprika: 'eth-ethereum',
+  },
+  bitcoin: {
+    coingecko: 'bitcoin',
+    coincap: 'bitcoin',
+    coinpaprika: 'btc-bitcoin',
+  },
+  tether: {
+    coingecko: 'tether',
+    coincap: 'tether',
+    coinpaprika: 'usdt-tether',
+  },
+  'usd-coin': {
+    coingecko: 'usd-coin',
+    coincap: 'usd-coin',
+    coinpaprika: 'usdc-usd-coin',
+  },
+  binancecoin: {
+    coingecko: 'binancecoin',
+    coincap: 'binance-coin',
+    coinpaprika: 'bnb-binance-coin',
+  },
+  solana: {
+    coingecko: 'solana',
+    coincap: 'solana',
+    coinpaprika: 'sol-solana',
+  },
+  dogecoin: {
+    coingecko: 'dogecoin',
+    coincap: 'dogecoin',
+    coinpaprika: 'doge-dogecoin',
+  },
+};
 
 function linearRegression(y) {
   // y: array of prices
@@ -65,11 +104,31 @@ const PricePredictions = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`https://api.coingecko.com/api/v3/coins/${coin}/market_chart?vs_currency=usd&days=30`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch price history');
-        return res.json();
-      })
+    const ids = COIN_ID_MAP[coin] || { coingecko: coin, coincap: coin, coinpaprika: coin };
+    const start = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const end = Date.now();
+    const startISO = new Date(start).toISOString();
+    const chartSources = [
+      {
+        url: `https://api.coingecko.com/api/v3/coins/${ids.coingecko}/market_chart?vs_currency=usd&days=30`,
+        cacheKey: `cg_pred_${ids.coingecko}_30d`,
+        type: 'market_chart',
+        backupType: 'coingecko',
+      },
+      {
+        url: `https://api.coincap.io/v2/assets/${ids.coincap}/history?interval=d1&start=${start}&end=${end}`,
+        cacheKey: `cc_pred_${ids.coincap}_30d`,
+        type: 'market_chart',
+        backupType: 'coincap',
+      },
+      {
+        url: `https://api.coinpaprika.com/v1/tickers/${ids.coinpaprika}/historical?start=${startISO}&interval=1d`,
+        cacheKey: `cp_pred_${ids.coinpaprika}_30d`,
+        type: 'market_chart',
+        backupType: 'coinpaprika',
+      },
+    ];
+    fetchWithMultiBackup({ sources: chartSources })
       .then((data) => {
         setHistory(data.prices.map(([timestamp, price]) => ({
           date: new Date(timestamp).toLocaleDateString(),

@@ -3,6 +3,8 @@ import { Contract, formatUnits } from 'ethers';
 import TokenChart from './TokenChart';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TokenList.css';
+import { fetchWithCache } from '../utils/fetchWithCache';
+import { fetchWithMultiBackup } from '../utils/fetchWithBackup';
 
 const ERC20_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
@@ -88,8 +90,34 @@ const TokenList = ({ provider, account, setBalances: setBalancesProp, setPrices:
   const fetchPrices = async () => {
     try {
       const ids = tokenList.map(t => t.coingeckoId).join(',');
-      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
-      const data = await response.json();
+      const priceSources = [
+        {
+          url: `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`,
+          cacheKey: `cg_token_prices_${ids}`,
+          type: 'simple_price',
+          backupType: 'coingecko',
+        },
+        {
+          url: `https://api.coincap.io/v2/assets`,
+          cacheKey: `cc_token_prices_${ids}`,
+          type: 'coins',
+          backupType: 'coincap',
+        },
+        {
+          url: `https://api.coinpaprika.com/v1/tickers`,
+          cacheKey: `cp_token_prices_${ids}`,
+          type: 'coins',
+          backupType: 'coinpaprika',
+        },
+      ];
+      let data = await fetchWithMultiBackup({ sources: priceSources });
+      // If backup API returns array, map to simple price format
+      if (Array.isArray(data)) {
+        data = data.reduce((acc, coin) => {
+          acc[coin.id] = { usd: coin.current_price };
+          return acc;
+        }, {});
+      }
       setPricesState(data);
       if (setPricesProp) setPricesProp(data);
     } catch (err) {
@@ -99,8 +127,27 @@ const TokenList = ({ provider, account, setBalances: setBalancesProp, setPrices:
 
   const fetchPriceHistory = async (coingeckoId) => {
     try {
-      const response = await fetch(`https://api.coingecko.com/api/v3/coins/${coingeckoId}/market_chart?vs_currency=usd&days=7&interval=daily`);
-      const data = await response.json();
+      const chartSources = [
+        {
+          url: `https://api.coingecko.com/api/v3/coins/${coingeckoId}/market_chart?vs_currency=usd&days=7&interval=daily`,
+          cacheKey: `cg_token_history_${coingeckoId}_7d`,
+          type: 'market_chart',
+          backupType: 'coingecko',
+        },
+        {
+          url: `https://api.coincap.io/v2/assets/${coingeckoId}/history?interval=d1&start=${Date.now() - 7 * 24 * 60 * 60 * 1000}&end=${Date.now()}`,
+          cacheKey: `cc_token_history_${coingeckoId}_7d`,
+          type: 'market_chart',
+          backupType: 'coincap',
+        },
+        {
+          url: `https://api.coinpaprika.com/v1/tickers/${coingeckoId}/historical?start=${new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()}&interval=1d`,
+          cacheKey: `cp_token_history_${coingeckoId}_7d`,
+          type: 'market_chart',
+          backupType: 'coinpaprika',
+        },
+      ];
+      const data = await fetchWithMultiBackup({ sources: chartSources });
       const history = data.prices.map(([timestamp, price]) => ({
         date: new Date(timestamp).toLocaleDateString(),
         price,

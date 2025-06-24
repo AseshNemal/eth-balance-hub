@@ -11,6 +11,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import './PopularCrypto.css';
+import { fetchWithMultiBackup } from '../utils/fetchWithBackup';
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,7 @@ export default function PopularCrypto() {
   const [loadingChart, setLoadingChart] = useState(false);
   const [errorChart, setErrorChart] = useState(null);
   const [retryChart, setRetryChart] = useState(0);
+  const [retryCoins, setRetryCoins] = useState(0);
 
   // Fetch coins by category
   useEffect(() => {
@@ -46,37 +48,75 @@ export default function PopularCrypto() {
     setPriceHistory([]);
     setLoadingCoins(true);
     setErrorCoins(null);
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${selectedCategory}&order=market_cap_desc&per_page=10&page=1`
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch coins');
-        return res.json();
-      })
+    const coinsSources = [
+      {
+        url: `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${selectedCategory}&order=market_cap_desc&per_page=10&page=1`,
+        cacheKey: `cg_cat_${selectedCategory}`,
+        type: 'coins',
+        backupType: 'coingecko',
+      },
+      {
+        url: 'https://api.coincap.io/v2/assets',
+        cacheKey: `cc_cat_${selectedCategory}`,
+        type: 'coins',
+        backupType: 'coincap',
+      },
+      {
+        url: 'https://api.coinpaprika.com/v1/tickers',
+        cacheKey: `cp_cat_${selectedCategory}`,
+        type: 'coins',
+        backupType: 'coinpaprika',
+      },
+    ];
+    fetchWithMultiBackup({ sources: coinsSources, forceRefresh: retryCoins > 0 })
       .then((data) => {
         setCoins(data);
         if (data.length > 0) setSelectedCoin(data[0]);
         setLoadingCoins(false);
       })
       .catch(() => {
-        setCoins([]);
+        // Try to load cached data if available
+        const cached = localStorage.getItem(`cg_cat_${selectedCategory}`);
+        if (cached) {
+          try {
+            const { data } = JSON.parse(cached);
+            setCoins(data);
+            if (data.length > 0) setSelectedCoin(data[0]);
+          } catch {}
+        } else {
+          setCoins([]);
+        }
         setErrorCoins('Failed to fetch coins. Please try again later.');
         setLoadingCoins(false);
       });
-  }, [selectedCategory]);
+  }, [selectedCategory, retryCoins]);
 
   // Fetch price history of selected coin (30 days)
   useEffect(() => {
     if (!selectedCoin) return;
     setLoadingChart(true);
     setErrorChart(null);
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/${selectedCoin.id}/market_chart?vs_currency=usd&days=30`
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch price history');
-        return res.json();
-      })
+    const chartSources = [
+      {
+        url: `https://api.coingecko.com/api/v3/coins/${selectedCoin.id}/market_chart?vs_currency=usd&days=30`,
+        cacheKey: `cg_chart_${selectedCoin.id}_30d`,
+        type: 'market_chart',
+        backupType: 'coingecko',
+      },
+      {
+        url: `https://api.coincap.io/v2/assets/${selectedCoin.id}/history?interval=d1&start=${Date.now() - 30 * 24 * 60 * 60 * 1000}&end=${Date.now()}`,
+        cacheKey: `cc_chart_${selectedCoin.id}_30d`,
+        type: 'market_chart',
+        backupType: 'coincap',
+      },
+      {
+        url: `https://api.coinpaprika.com/v1/tickers/${selectedCoin.id}/historical?start=${new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()}&interval=1d`,
+        cacheKey: `cp_chart_${selectedCoin.id}_30d`,
+        type: 'market_chart',
+        backupType: 'coinpaprika',
+      },
+    ];
+    fetchWithMultiBackup({ sources: chartSources, forceRefresh: retryChart > 0 })
       .then((data) => {
         const prices = data.prices.map(([timestamp, price]) => ({
           date: new Date(timestamp).toLocaleDateString(),
@@ -164,7 +204,17 @@ export default function PopularCrypto() {
             <span>Loading coins...</span>
           </div>
         ) : errorCoins ? (
-          <div className="error-container">{errorCoins}</div>
+          <div className="error-container" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {errorCoins}
+            <button
+              className="animated-btn"
+              style={{ padding: '0.3rem 1rem', fontSize: 14 }}
+              onClick={() => setRetryCoins(c => c + 1)}
+              disabled={loadingCoins}
+            >
+              Retry
+            </button>
+          </div>
         ) : coins.length === 0 ? (
           <div className="empty-state">No coins found.</div>
         ) : (

@@ -1,0 +1,23 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <ellipse cx="96" cy="96" rx="56" ry="56" fill="#F3F4F6"/>
+    <ellipse cx="96" cy="96" rx="52" ry="52" fill="url(#circle)"/>
+    <path d="M96 52L116 98L96 110L76 98L96 52Z" fill="#6B7280"/>
+    <path d="M96 110V140" stroke="#23272F" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="96" cy="144" rx="8" ry="4" fill="#6B7280" fill-opacity="0.5"/>
+  </g>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3F4F6"/>
+      <stop offset="1" stop-color="#6B7280"/>
+    </linearGradient>
+    <linearGradient id="circle" x1="44" y1="44" x2="148" y2="148" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D1D5DB"/>
+      <stop offset="1" stop-color="#6B7280"/>
+    </linearGradient>
+    <filter id="shadow" x="24" y="24" width="144" height="144" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#23272F" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+</svg> 

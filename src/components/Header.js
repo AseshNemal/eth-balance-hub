@@ -12,8 +12,8 @@ const Header = () => {
             <a href="/" style={styles.link}>Home</a>
             <a href="/wallet" style={styles.link}>Wallet</a>
             <a href="/tokens" style={styles.link}>Tokens</a>
-            <a href="/about" style={styles.link}>About</a>
             <a href="/predictions" style={styles.link}>Predictions</a>
+            <a href="/about" style={styles.link}>About</a>
           </nav>
         </div>
       </header>

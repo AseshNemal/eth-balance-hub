@@ -9,7 +9,7 @@ const Footer = () => (
       </span>
       <a
         className="footer-link"
-        href="https://github.com/aseshnemal/EthBalanceHub"
+        href="https://github.com/AseshNemal/eth-balance-hub"
         target="_blank"
         rel="noopener noreferrer"
       >

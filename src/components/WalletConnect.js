@@ -5,23 +5,43 @@ const WalletConnect = ({ onWalletConnected }) => {
   const [account, setAccount] = useState(null);
   const [error, setError] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [connectedWallet, setConnectedWallet] = useState(null); // 'metamask' or 'binance'
 
-  const connectWallet = async () => {
+  const connectMetaMask = async () => {
     if (!window.ethereum) {
       setError('MetaMask is not installed. Please install it to use this app.');
       return;
     }
-    
     setIsConnecting(true);
     setError(null);
-    
     try {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setAccount(accounts[0]);
+      setConnectedWallet('metamask');
       onWalletConnected(accounts[0]);
       setError(null);
     } catch (err) {
-      setError('Failed to connect wallet: ' + err.message);
+      setError('Failed to connect MetaMask: ' + err.message);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const connectBinance = async () => {
+    if (!window.BinanceChain) {
+      setError('Binance Wallet is not installed. Please install it to use this app.');
+      return;
+    }
+    setIsConnecting(true);
+    setError(null);
+    try {
+      const accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+      setConnectedWallet('binance');
+      onWalletConnected(accounts[0]);
+      setError(null);
+    } catch (err) {
+      setError('Failed to connect Binance Wallet: ' + err.message);
     } finally {
       setIsConnecting(false);
     }
@@ -32,9 +52,24 @@ const WalletConnect = ({ onWalletConnected }) => {
       window.ethereum.on('accountsChanged', (accounts) => {
         if (accounts.length > 0) {
           setAccount(accounts[0]);
+          setConnectedWallet('metamask');
           onWalletConnected(accounts[0]);
         } else {
           setAccount(null);
+          setConnectedWallet(null);
+          onWalletConnected(null);
+        }
+      });
+    }
+    if (window.BinanceChain) {
+      window.BinanceChain.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          setConnectedWallet('binance');
+          onWalletConnected(accounts[0]);
+        } else {
+          setAccount(null);
+          setConnectedWallet(null);
           onWalletConnected(null);
         }
       });
@@ -47,7 +82,7 @@ const WalletConnect = ({ onWalletConnected }) => {
         <div className="wallet-connected">
           <div className="connection-status">
             <div className="status-indicator connected"></div>
-            <span className="status-text">Connected</span>
+            <span className="status-text">Connected ({connectedWallet === 'binance' ? 'Binance Wallet' : 'MetaMask'})</span>
           </div>
           <div className="account-info">
             <span className="account-label">Account:</span>
@@ -57,9 +92,10 @@ const WalletConnect = ({ onWalletConnected }) => {
       ) : (
         <div className="wallet-disconnected">
           <button
-            onClick={connectWallet}
+            onClick={connectMetaMask}
             disabled={isConnecting}
             className={`connect-button ${isConnecting ? 'connecting' : ''}`}
+            style={{ marginRight: 12 }}
           >
             {isConnecting ? (
               <>
@@ -70,6 +106,23 @@ const WalletConnect = ({ onWalletConnected }) => {
               <>
                 <span className="button-icon">🦊</span>
                 <span>Connect MetaMask</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={connectBinance}
+            disabled={isConnecting}
+            className={`connect-button ${isConnecting ? 'connecting' : ''}`}
+          >
+            {isConnecting ? (
+              <>
+                <div className="spinner"></div>
+                <span>Connecting...</span>
+              </>
+            ) : (
+              <>
+                <span className="button-icon">🟡</span>
+                <span>Connect Binance Wallet</span>
               </>
             )}
           </button>

@@ -94,10 +94,5 @@ EthBalanceHub is a robust, modern React web app for tracking your crypto portfol
 
 ---
 
-## 📄 License
-
-MIT License. See [LICENSE](LICENSE) for details.
-
----
 
 **Questions or suggestions?** Open an issue or PR!

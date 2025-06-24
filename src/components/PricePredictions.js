@@ -71,6 +71,53 @@ const COIN_ID_MAP = {
   },
 };
 
+const COIN_SYMBOL_MAP = {
+  ethereum: 'ETH',
+  bitcoin: 'BTC',
+  tether: 'USDT',
+  'usd-coin': 'USDC',
+  binancecoin: 'BNB',
+  solana: 'SOL',
+  dogecoin: 'DOGE',
+};
+
+const COINLORE_ID_MAP = {
+  ethereum: 80,
+  bitcoin: 90,
+  binancecoin: 2710,
+  dogecoin: 2,
+  // ...add more as needed
+};
+const MESSARI_SYMBOL_MAP = {
+  ethereum: 'eth',
+  bitcoin: 'btc',
+  binancecoin: 'bnb',
+  dogecoin: 'doge',
+  // ...add more as needed
+};
+
+const CMC_ID_MAP = {
+  ethereum: 1027,
+  bitcoin: 1,
+  binancecoin: 1839,
+  dogecoin: 74,
+  // ...add more as needed
+};
+const NOMICS_SYMBOL_MAP = {
+  ethereum: 'ETH',
+  bitcoin: 'BTC',
+  binancecoin: 'BNB',
+  dogecoin: 'DOGE',
+  // ...add more as needed
+};
+const BINANCE_SYMBOL_MAP = {
+  ethereum: 'ETHUSDT',
+  bitcoin: 'BTCUSDT',
+  binancecoin: 'BNBUSDT',
+  dogecoin: 'DOGEUSDT',
+  // ...add more as needed
+};
+
 function linearRegression(y) {
   // y: array of prices
   const n = y.length;
@@ -99,15 +146,27 @@ const PricePredictions = () => {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [warning, setWarning] = useState(null);
   const [predictionType, setPredictionType] = useState('trend'); // 'trend' or 'fun'
 
   useEffect(() => {
     setLoading(true);
     setError(null);
+    setWarning(null);
     const ids = COIN_ID_MAP[coin] || { coingecko: coin, coincap: coin, coinpaprika: coin };
+    const symbol = COIN_SYMBOL_MAP[coin] || coin.toUpperCase();
+    const coinloreId = COINLORE_ID_MAP[coin];
+    const messariSymbol = MESSARI_SYMBOL_MAP[coin];
+    const cmcId = CMC_ID_MAP[coin];
+    const nomicsSymbol = NOMICS_SYMBOL_MAP[coin];
+    const binanceSymbol = BINANCE_SYMBOL_MAP[coin];
+    const cmcApiKey = process.env.REACT_APP_CMC_API_KEY;
+    const nomicsApiKey = process.env.REACT_APP_NOMICS_API_KEY;
     const start = Date.now() - 30 * 24 * 60 * 60 * 1000;
     const end = Date.now();
     const startISO = new Date(start).toISOString();
+    const messariStart = new Date(start).toISOString().split('T')[0];
+    const messariEnd = new Date(end).toISOString().split('T')[0];
     const chartSources = [
       {
         url: `https://api.coingecko.com/api/v3/coins/${ids.coingecko}/market_chart?vs_currency=usd&days=30`,
@@ -127,7 +186,44 @@ const PricePredictions = () => {
         type: 'market_chart',
         backupType: 'coinpaprika',
       },
-    ];
+      {
+        url: `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol}&tsym=USD&limit=30`,
+        cacheKey: `ccmp_pred_${symbol}_30d`,
+        type: 'cryptocompare_histoday',
+        backupType: 'cryptocompare',
+      },
+      coinloreId && {
+        url: `https://api.coinlore.net/api/coin/markets/?id=${coinloreId}`,
+        cacheKey: `cl_pred_${coinloreId}_30d`,
+        type: 'coinlore_history',
+        backupType: 'coinlore',
+      },
+      messariSymbol && {
+        url: `https://data.messari.io/api/v1/assets/${messariSymbol}/metrics/price/time-series?start=${messariStart}&end=${messariEnd}&interval=1d`,
+        cacheKey: `ms_pred_${messariSymbol}_30d`,
+        type: 'messari_history',
+        backupType: 'messari',
+      },
+      cmcId && cmcApiKey && {
+        url: `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/historical?id=${cmcId}&convert=USD&count=30`,
+        cacheKey: `cmc_pred_${cmcId}_30d`,
+        type: 'cmc_history',
+        backupType: 'coinmarketcap',
+        headers: { 'X-CMC_PRO_API_KEY': cmcApiKey },
+      },
+      nomicsSymbol && nomicsApiKey && {
+        url: `https://api.nomics.com/v1/currencies/sparkline?key=${nomicsApiKey}&ids=${nomicsSymbol}&start=${startISO}`,
+        cacheKey: `nomics_pred_${nomicsSymbol}_30d`,
+        type: 'nomics_history',
+        backupType: 'nomics',
+      },
+      binanceSymbol && {
+        url: `https://api.binance.com/api/v3/klines?symbol=${binanceSymbol}&interval=1d&limit=30`,
+        cacheKey: `binance_pred_${binanceSymbol}_30d`,
+        type: 'binance_history',
+        backupType: 'binance',
+      },
+    ].filter(Boolean);
     fetchWithMultiBackup({ sources: chartSources })
       .then((data) => {
         setHistory(data.prices.map(([timestamp, price]) => ({
@@ -137,8 +233,56 @@ const PricePredictions = () => {
         setLoading(false);
       })
       .catch(() => {
-        setHistory([]);
-        setError('Failed to fetch price history. Please try again later.');
+        // Try to load last cached data
+        let cacheKey = `cg_pred_${ids.coingecko}_30d`;
+        let cached = localStorage.getItem(cacheKey);
+        if (!cached) {
+          cacheKey = `cc_pred_${ids.coincap}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached) {
+          cacheKey = `cp_pred_${ids.coinpaprika}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached) {
+          cacheKey = `ccmp_pred_${symbol}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached && coinloreId) {
+          cacheKey = `cl_pred_${coinloreId}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached && messariSymbol) {
+          cacheKey = `ms_pred_${messariSymbol}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached && cmcId) {
+          cacheKey = `cmc_pred_${cmcId}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached && nomicsSymbol) {
+          cacheKey = `nomics_pred_${nomicsSymbol}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (!cached && binanceSymbol) {
+          cacheKey = `binance_pred_${binanceSymbol}_30d`;
+          cached = localStorage.getItem(cacheKey);
+        }
+        if (cached) {
+          try {
+            const { data } = JSON.parse(cached);
+            setHistory(data.prices.map(([timestamp, price]) => ({
+              date: new Date(timestamp).toLocaleDateString(),
+              price,
+            })));
+            setWarning('No live data. Showing last available data.');
+            setLoading(false);
+            return;
+          } catch {}
+        }
+        // No cached data, show placeholder
+        setHistory([{ date: 'N/A', price: 0 }]);
+        setWarning('No data available for this chart.');
         setLoading(false);
       });
   }, [coin]);
@@ -243,7 +387,10 @@ const PricePredictions = () => {
               ) : history.length === 0 ? (
                 <div className="empty-state">No price history available for this coin.</div>
               ) : (
-                <Line data={chartData} options={chartOptions} />
+                <>
+                  {warning && <div className="warning-container" style={{ color: '#eab308', marginBottom: 8 }}>{warning}</div>}
+                  <Line data={chartData} options={chartOptions} />
+                </>
               )}
             </div>
           </div>

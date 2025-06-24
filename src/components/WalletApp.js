@@ -45,19 +45,19 @@ function WalletApp() {
           </button>
         </div>
         <div className="wallet-content">
-          {walletType === 'metamask' && (
-            <WalletConnect onWalletConnected={(account) => {
-              if (account) {
-                const newProvider = new ethers.BrowserProvider(window.ethereum);
-                handleWalletConnected(account, newProvider);
-              } else {
-                handleWalletDisconnected();
-              }
-            }} />
-          )}
-          {walletType === 'walletconnect' && (
-            <WalletConnectProvider onConnect={handleWalletConnected} onDisconnect={handleWalletDisconnected} />
-          )}
+        {walletType === 'metamask' && (
+          <WalletConnect onWalletConnected={(account) => {
+            if (account) {
+              const newProvider = new ethers.BrowserProvider(window.ethereum);
+              handleWalletConnected(account, newProvider);
+            } else {
+              handleWalletDisconnected();
+            }
+          }} />
+        )}
+        {walletType === 'walletconnect' && (
+          <WalletConnectProvider onConnect={handleWalletConnected} onDisconnect={handleWalletDisconnected} />
+        )}
         </div>
         <MonitorPanel provider={provider} account={account} balances={balances} prices={prices} />
         {account && (

@@ -33,6 +33,41 @@ const DEFAULT_TOKENS = [
   }
 ];
 
+// Predefined popular tokens for quick add
+const PREDEFINED_TOKENS = [
+  {
+    symbol: 'UNI',
+    address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+    coingeckoId: 'uniswap',
+    icon: '🦄'
+  },
+  {
+    symbol: 'LINK',
+    address: '0x514910771af9ca656af840dff83e8264ecf986ca',
+    coingeckoId: 'chainlink',
+    icon: '🔗'
+  },
+  {
+    symbol: 'AAVE',
+    address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+    coingeckoId: 'aave',
+    icon: '👻'
+  },
+  {
+    symbol: 'MKR',
+    address: '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
+    coingeckoId: 'maker',
+    icon: '🏦'
+  },
+  {
+    symbol: 'SNX',
+    address: '0xc011a72400e58ecd99ee497cf89e3775d4bd732f',
+    coingeckoId: 'havven',
+    icon: '🧊'
+  },
+  // ...add more as needed
+];
+
 const TokenList = ({ provider, account, setBalances: setBalancesProp, setPrices: setPricesProp }) => {
   const [tokenList, setTokenList] = useState(() => {
     try {
@@ -160,11 +195,11 @@ const TokenList = ({ provider, account, setBalances: setBalancesProp, setPrices:
 
   useEffect(() => {
     fetchPrices();
-  }, []);
+  }, [tokenList]);
 
   useEffect(() => {
     fetchBalances();
-  }, [provider, account]);
+  }, [provider, account, tokenList]);
 
   const toggleSaveToken = (symbol) => {
     let updated;
@@ -216,6 +251,21 @@ const TokenList = ({ provider, account, setBalances: setBalancesProp, setPrices:
     <div className="token-list-container">
       <div className="token-list-header">
         <h2 className="token-list-title">Token Balances</h2>
+        {/* Quick Add Predefined Tokens */}
+        <div className="predefined-tokens" style={{ marginBottom: 8 }}>
+          <span style={{ fontWeight: 600, marginRight: 8 }}>Quick Add:</span>
+          {PREDEFINED_TOKENS.filter(
+            t => !tokenList.some(ut => ut.address.toLowerCase() === t.address.toLowerCase())
+          ).map(token => (
+            <button
+              key={token.symbol}
+              onClick={() => setNewToken(token)}
+              style={{ margin: '0 4px', padding: '2px 8px', borderRadius: 6, border: '1px solid #ccc', cursor: 'pointer', background: '#f3f4f6' }}
+            >
+              {token.icon} {token.symbol}
+            </button>
+          ))}
+        </div>
         <form className="add-token-form" onSubmit={handleAddToken} style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
           <input
             type="text"

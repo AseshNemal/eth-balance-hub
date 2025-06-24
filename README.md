@@ -41,8 +41,6 @@ EthBalanceHub is a robust, modern React web app for tracking your crypto portfol
 2. **Install dependencies:**
    ```bash
    yarn install
-   # or
-   npm install
    ```
 3. **(Optional) Add API keys:**
    - For CoinMarketCap and Nomics, get free API keys and add them to a `.env` file:
@@ -54,8 +52,6 @@ EthBalanceHub is a robust, modern React web app for tracking your crypto portfol
 4. **Start the app:**
    ```bash
    yarn start
-   # or
-   npm start
    ```
 
 ---
@@ -64,8 +60,7 @@ EthBalanceHub is a robust, modern React web app for tracking your crypto portfol
 
 - **CoinMarketCap:** [Get a free API key](https://coinmarketcap.com/api/)
 - **Nomics:** [Get a free API key](https://nomics.com/)
-- Add your keys to `.env` as shown above.
-- Most other APIs do not require a key.
+
 
 ---
 

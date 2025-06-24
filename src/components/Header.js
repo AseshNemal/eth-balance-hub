@@ -8,7 +8,7 @@ const Header = () => {
           <h1 style={styles.logo}>ETH Balance Hub</h1>
           <nav style={styles.nav}>
             <a href="/" style={styles.link}>Home</a>
-            <a href="wallet" style={styles.link}>Wallet</a>
+            <a href="wallet" style={styles.link}>My Wallet</a>
             <a href="tokens" style={styles.link}>Tokens</a>
             <a href="about" style={styles.link}>About</a>
           </nav>

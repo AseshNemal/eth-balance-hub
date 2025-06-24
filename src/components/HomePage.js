@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const bgImages = [
-  'https://images.unsplash.com/photo-1642040127302-63f24dd3fa52?auto=format&fit=crop&w=1500&q=80',
+  'https://source.unsplash.com/1600x900/?bitcoin'
+
+,
   'https://images.unsplash.com/photo-1611078483597-13e2cf6c74cc?auto=format&fit=crop&w=1500&q=80',
   'https://images.unsplash.com/photo-1610549539287-159b68ab9564?auto=format&fit=crop&w=1500&q=80'
 ];

@@ -1,6 +1,137 @@
+/* Global Gray Theme & Animations */
+html, body, #root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f3f4f6 0%, #6b7280 100%);
+  color: #23272f;
+  font-family: 'Inter', Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/* Page fade-in animation */
+.fade-in-page {
+  animation: fadeInPage 1s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes fadeInPage {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(209, 213, 219, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #6b7280, #d1d5db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated underline for links */
+a, .animated-link {
+  color: #4b5563;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
+}
+a::after, .animated-link::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6b7280, #d1d5db);
+  transition: width 0.3s;
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  border-radius: 2px;
+}
+a:hover, .animated-link:hover {
+  color: #111827;
+}
+a:hover::after, .animated-link:hover::after {
+  width: 100%;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  background: #f3f4f6;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #d1d5db 0%, #6b7280 100%);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+}
+
+/* Selection color */
+::selection {
+  background: #d1d5db;
+  color: #23272f;
+}
+
+/* Button animation utility */
+.animated-btn {
+  background: linear-gradient(135deg, #6b7280, #d1d5db);
+  color: #23272f;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 16px rgba(107, 114, 128, 0.10);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.animated-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(107, 114, 128, 0.10);
+  background: linear-gradient(135deg, #d1d5db, #6b7280);
+}
+
+/* Card hover animation utility */
+.animated-card {
+  transition: box-shadow 0.3s, transform 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.animated-card:hover {
+  box-shadow: 0 8px 32px rgba(107, 114, 128, 0.10);
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* Responsive utility */
+@media (max-width: 768px) {
+  .App {
+    padding-bottom: 60px;
+  }
+}
+
 /* Custom global styles */
 body {
-  background: linear-gradient(to right, #ebf4ff, #c3dafe);
+  background: #d3d3d3;
   min-height: 100vh;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   color: #1a202c;

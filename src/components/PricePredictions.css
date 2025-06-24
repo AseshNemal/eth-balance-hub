@@ -1,0 +1,68 @@
+/* Price Predictions Page Styles */
+.predictions-root {
+  min-height: 100vh;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0 3rem 0;
+}
+
+.predictions-section {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.predictions-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #6b7280, #d1d5db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.predictions-card {
+  margin: 0 auto 2rem auto;
+  background: rgba(209, 213, 219, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  padding: 2rem 1.5rem;
+  max-width: 700px;
+  border: 1px solid #e5e7eb;
+  animation: fadeInUp 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+
+.predictions-disclaimer {
+  font-size: 1rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 1.5rem;
+  background: rgba(209, 213, 219, 0.5);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .predictions-section {
+    padding: 0 0.5rem;
+  }
+  .predictions-title {
+    font-size: 1.3rem;
+  }
+  .predictions-card {
+    padding: 1rem 0.5rem;
+  }
+  .predictions-disclaimer {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.5rem;
+  }
+} 

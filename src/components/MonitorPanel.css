@@ -1,0 +1,81 @@
+/* Monitor Panel Grid */
+.monitor-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.monitor-card {
+  background: rgba(209, 213, 219, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  padding: 1.5rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid #e5e7eb;
+  animation: fadeInUp 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+
+.monitor-card:hover {
+  box-shadow: 0 8px 32px rgba(107, 114, 128, 0.12);
+  transform: translateY(-4px) scale(1.01);
+}
+
+.monitor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.7rem;
+}
+
+.monitor-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #23272f;
+  letter-spacing: 0.01em;
+}
+
+.monitor-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 0.5rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.08);
+}
+
+.monitor-info {
+  font-size: 1rem;
+  color: #4b5563;
+  margin-bottom: 0.2rem;
+}
+
+.monitor-timestamp {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .monitor-panel-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .monitor-card {
+    padding: 1rem 0.7rem;
+  }
+} 

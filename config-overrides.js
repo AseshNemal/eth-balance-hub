@@ -37,5 +37,12 @@ module.exports = function override(config) {
     })
   );
 
+  // Suppress source map warnings from dependencies
+  config.ignoreWarnings = [
+    (warning) =>
+      typeof warning.message === 'string' &&
+      warning.message.includes('Failed to parse source map'),
+  ];
+
   return config;
 };

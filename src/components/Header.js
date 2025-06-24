@@ -1,4 +1,6 @@
+import { color } from 'framer-motion';
 import React from 'react';
+import './Header.css';
 
 const Header = () => {
   return (
@@ -8,9 +10,10 @@ const Header = () => {
           <h1 style={styles.logo}>ETH Balance Hub</h1>
           <nav style={styles.nav}>
             <a href="/" style={styles.link}>Home</a>
-            <a href="wallet" style={styles.link}>My Wallet</a>
-            <a href="tokens" style={styles.link}>Tokens</a>
-            <a href="about" style={styles.link}>About</a>
+            <a href="/wallet" style={styles.link}>Wallet</a>
+            <a href="/tokens" style={styles.link}>Tokens</a>
+            <a href="/about" style={styles.link}>About</a>
+            <a href="/predictions" style={styles.link}>Predictions</a>
           </nav>
         </div>
       </header>
@@ -24,6 +27,7 @@ const styles = {
     padding: '16px 0',
     color: 'white',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    
   },
   container: {
     maxWidth: '1200px',
@@ -37,6 +41,7 @@ const styles = {
     fontSize: '1.5rem',
     fontWeight: 'bold',
     letterSpacing: '1px',
+    color: 'white',
   },
   nav: {
     display: 'flex',

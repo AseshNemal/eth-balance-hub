@@ -1,70 +1,108 @@
-# Getting Started with Create React App
+# EthBalanceHub
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+EthBalanceHub is a robust, modern React web app for tracking your crypto portfolio, token balances, and market data. It provides real-time and historical data for Ethereum and other popular coins, including price predictions, category-based coin lists (NFT, DeFi, Stablecoins, etc.), and powerful fallback mechanisms to ensure data is always available—even if some APIs fail.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- **Multi-Source Crypto Data:**
+  - Fetches from CoinGecko, CoinCap, CoinPaprika, CryptoCompare, Coinlore, Messari, CoinStats, CoinMarketCap, Nomics, Binance.
+  - Automatic fallback to backup APIs if one fails or is rate-limited.
+- **Portfolio & Token Management:**
+  - View ETH and ERC-20 token balances for your wallet.
+  - Add custom tokens (symbol, address, CoinGecko ID, emoji).
+  - "Quick Add" for popular tokens.
+- **Category-Based Coin Lists:**
+  - Browse coins by category (NFT, Stablecoins, DeFi, Smart Contract Platforms, etc.).
+  - Always shows only relevant coins, even with backup APIs.
+  - Never empty: shows example tokens if all APIs/cache fail.
+- **Price Predictions & Charts:**
+  - 30-day price history charts for all supported coins.
+  - Linear regression and "fun/random" price predictions.
+  - Never empty: shows example chart if all APIs/cache fail.
+- **Caching & Offline Support:**
+  - All API responses cached in localStorage for 10 minutes (configurable).
+  - Shows last known data if offline or APIs are down.
+- **User Experience:**
+  - Clear warnings if showing cached/example data.
+  - Retry buttons for failed API calls.
+  - Responsive, modern UI.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Setup
 
-### `npm test`
+1. **Clone the repo:**
+   ```bash
+   git clone <your-repo-url>
+   cd EthBalanceHub/eth-balance-hub
+   ```
+2. **Install dependencies:**
+   ```bash
+   yarn install
+   # or
+   npm install
+   ```
+3. **(Optional) Add API keys:**
+   - For CoinMarketCap and Nomics, get free API keys and add them to a `.env` file:
+     ```env
+     REACT_APP_CMC_API_KEY=your_cmc_key
+     REACT_APP_NOMICS_API_KEY=your_nomics_key
+     ```
+   - Restart your dev server after adding keys.
+4. **Start the app:**
+   ```bash
+   yarn start
+   # or
+   npm start
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 🔑 API Keys
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **CoinMarketCap:** [Get a free API key](https://coinmarketcap.com/api/)
+- **Nomics:** [Get a free API key](https://nomics.com/)
+- Add your keys to `.env` as shown above.
+- Most other APIs do not require a key.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 💡 Usage
 
-### `npm run eject`
+- **Connect your Ethereum wallet** to view balances.
+- **Add tokens** manually or use "Quick Add" for popular tokens.
+- **Browse categories** (NFT, DeFi, Stablecoins, etc.) to see top coins and charts.
+- **View price predictions** and historical charts for any supported coin.
+- **Retry** if you see a warning about failed data—app will try all backup APIs.
+- **See warnings** if you're viewing cached or example data.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## ➕ Adding Coins or Categories
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **To add more coins to a category:**
+  - Edit `CATEGORY_COIN_IDS` in `src/components/PopularCrypto.js` and add CoinGecko IDs.
+- **To add more backup APIs:**
+  - Add to the `coinsSources` or `chartSources` arrays in the relevant component.
+  - Update normalization logic in `src/utils/fetchWithBackup.js`.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🧩 Extending the Project
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Add more categories or coins by updating the mappings.
+- Add more backup APIs as they become available.
+- Integrate more wallet types or blockchains.
+- Enhance UI/UX with more analytics, notifications, or features.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 📄 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+MIT License. See [LICENSE](LICENSE) for details.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Questions or suggestions?** Open an issue or PR!

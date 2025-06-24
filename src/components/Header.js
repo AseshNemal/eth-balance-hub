@@ -42,6 +42,8 @@ const styles = {
     fontWeight: 'bold',
     letterSpacing: '1px',
     color: 'white',
+    display: 'inline-block',
+    verticalAlign: 'middle',
   },
   nav: {
     display: 'flex',
